@@ -24,8 +24,8 @@ export default new Router({
         },
       ]
     },{
-      path: '/qr_code',
-      name: 'QR_Code',
+      path: '/face',
+      name: 'Face',
       component: Shot
     }
   ]
