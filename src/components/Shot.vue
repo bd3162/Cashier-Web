@@ -1,9 +1,14 @@
 <template>
     <!--Taking picture-->
   <div id="camera">
-    <video id="video" width="320" height="240" autoplay></video>
-    <el-button @click="shot">Snap Photo</el-button>
-    <canvas id="canvas" width="320" height="240"></canvas>
+    <el-row type="flex" class="row-bg" justify="center">
+      <el-col :span="10">
+        <h1>人脸识别</h1>
+        <video id="video" width="320" height="240" autoplay></video>
+        <el-button @click="shot" type="primary" round>Snap Photo</el-button>
+        <canvas id="canvas" width="320" height="240"></canvas>
+      </el-col>
+    </el-row>
   </div>
 </template>
 
@@ -39,6 +44,8 @@
       methods: {
         shot: function () {
           this.context.drawImage(this.video, 0, 0, 320, 240);
+          var dataURL = this.canvas.toDataURL("screenshot/png");
+          console.log(dataURL);
         }
       }
     }
