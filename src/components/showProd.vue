@@ -6,12 +6,7 @@
       <el-row :gutter="20" style="padding: 14px;">
         <el-col :span="2"><img src="../assets/logo.png" class="image"></el-col>
         <el-col :span="6" :offset="2">{{prod.title}}</el-col>
-        <el-col :span="3" :offset="4" v-if="to_be_added">
-          <el-button type="success" icon="el-icon-check">添加</el-button>
-        </el-col>
-        <el-col :span="3" :offset="6">
-          <el-button type="success" icon="el-icon-close">删除</el-button>
-        </el-col>
+        <el-col :span="3" :offset="4"><el-button type="success" icon="el-icon-check">添加</el-button></el-col>
       </el-row>
     </el-card>
   </el-col>
@@ -32,7 +27,6 @@ export default {
         brand,
         cate,
       },
-      to_be_added: true,
     }
   }
 }

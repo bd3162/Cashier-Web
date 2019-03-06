@@ -1,8 +1,8 @@
 <template>
   <div id="app">
     <headerNav></headerNav>
-
     <router-view/>
+    
   </div>
 </template>
 
@@ -20,7 +20,5 @@ export default {
 </script>
 
 <style>
-#app {
 
-}
 </style>
