@@ -1,5 +1,5 @@
 <template>
-<el-div>
+<div>
     <el-form :inline="true">
         <el-form-item>
             <el-input v-model="asinForSearch" placeholder="Please input the product ID" clearable></el-input>
@@ -14,12 +14,13 @@
     <transition name="el-fade-in">
         <ProdCard v-if="prodFound" :prod="result" @added="addProd"/>
     </transition>
-</el-div>
+</div>
 </template>
 
 <script>
 import ProdCard from './ProdCard'
 export default {
+    name: 'searchProd',
     components:{
         ProdCard,
     },
@@ -42,6 +43,7 @@ export default {
         search () {
             this.prodFound = false;
 
+            // input component can't be empty
             if(this.asinForSearch == null || this.asinForSearch == "") {
                 this.$message({message: 'Please input the ID of product that you wanna search!', type: 'warning'})
             }

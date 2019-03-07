@@ -15,7 +15,7 @@
 <script>
     export default {
       name: "Shot",
-      data() {
+      data () {
         return {
           canvas: null,
           video: null,

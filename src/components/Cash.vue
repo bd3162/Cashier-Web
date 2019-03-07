@@ -3,20 +3,32 @@
     	<el-row type="flex" class="row-bg" justify="center">
       		<el-col :span="10">
         		<h1>收银台</h1>
-				<div v-if="member">
-					<h2 style="color: #F56C6C">You Are Already a Member of Our Market.</h2>
-					<h2 style="color: #F56C6C">Enjoy Your Member Points!</h2>
-				</div>
-				<div v-else>
-					<h2 style="color: #F56C6C">您还不是会员</h2>
-					<h2 style="color: #F56C6C">现在注册，领取积分奖励！</h2>
-				</div>
+				<el-row :gutter="24" v-if="member">
+					<el-col :span="6">
+						<h2 style="color: #F56C6C">您已经是零售店会员</h2>
+						<h2 style="color: #F56C6C">享受您的积分吧！</h2>
+					</el-col>
+				</el-row>
+
+				<el-row :gutter="24" v-else>
+					<el-col :span="12">
+						<h2 style="color: #F56C6C">您还不是会员</h2>
+						<h2 style="color: #F56C6C">现在注册，领取积分奖励！</h2>
+					</el-col>
+					<el-col :span="4" :offset="8">
+						<el-tooltip class="item" effect="dark" content="Verification: Q5ZG" placement="right" style="position:absolute; bottom: 0">
+							<el-button type="success" round>Sign Up</el-button>
+						</el-tooltip>
+					</el-col>
+				</el-row>
         		<searchProd @addProds="addAsin"></searchProd>
 				<ProdCard2 v-for="(prod, key) in shoppingList" :key="prod" :prod=prod @deleteAsin="deleteAsin"></ProdCard2>
-				<div>
-					<h3>Total: $ {{totalPrice | priceFilter}}</h3>
-					<el-button @click="check" type="success" size="medium" icon="el-icon-goods" round>Check</el-button>
-				</div>
+				<el-row type="flex" class="row-bg" justify="end" :gutter="24">
+					<el-col :span="6">
+						<h3>Total: $ {{totalPrice | priceFilter}}</h3>
+						<el-button @click="check" type="success" size="medium" icon="el-icon-goods" round>Check</el-button>
+					</el-col>
+				</el-row>
       		</el-col>
     	</el-row>
     </div>
@@ -38,9 +50,10 @@ export default {
 	},
 	components: {
 		searchProd,
-		ProdCard2,
+		ProdCard2, // product card that already be put in the shopping list
 	},
 	computed: {
+	    // return total price of shopping list
 		totalPrice () {
 			let total = 0;
 			this.shoppingList.forEach(a => {
@@ -77,14 +90,20 @@ export default {
 			else {
 				this.shoppingList.push(prod);
 			}
+		},
+
+		// check orders
+		check () {
+
 		}
 	},
 	filters: {
+	    // filter to keep price in short
 		priceFilter(price){
 			let newPrice = parseFloat(price).toFixed(2);
 			return parseFloat(newPrice)
 		}
-	}
+	},
 }
 </script>
 
