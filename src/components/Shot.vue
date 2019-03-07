@@ -4,8 +4,9 @@
     <el-row type="flex" class="row-bg" justify="center">
       <el-col :span="10">
         <h1>人脸识别</h1>
+        <img id="image" :src="imgUrl"/>
         <video id="video" width="320" height="240" autoplay></video>
-        <el-button @click="shot" type="primary" round>Snap Photo</el-button>
+        <el-button @click="snap" type="primary" round>Snap Photo</el-button>
         <canvas id="canvas" width="320" height="240"></canvas>
       </el-col>
     </el-row>
@@ -17,6 +18,7 @@
       name: "Shot",
       data () {
         return {
+          imgUrl: '',
           canvas: null,
           video: null,
           context: null,
@@ -42,10 +44,47 @@
 
       },
       methods: {
-        shot: function () {
-          this.context.drawImage(this.video, 0, 0, 320, 240);
+        shot: function (url) {
+          // this.context.drawImage(this.video, 0, 0, 320, 240);
+          this.imgUrl = url;
+          var img = document.getElementById('image');
+          this.context.drawImage(img, 0, 0, 320, 240);
           var dataURL = this.canvas.toDataURL("screenshot/png");
-          console.log(dataURL);
+          return dataURL;
+        },
+        snap: function () {
+          var imgs = ['../../static/502/1.jpg', '../../static/502/2.jpg', '../../static/502/3.jpg', '../../static/502/4.jpg', '../../static/502/5.jpg', ]
+
+          for (var i=0;i<imgs.length;i++) {
+            let base = this.shot(imgs[i]);
+            this.$axios({
+              method: 'POST',
+              url: 'crm32/multiImage/sendBase',
+              data: this.qs.stringify({
+                bases: base,
+                name: i,
+                })
+                })
+                    .then(response => {
+                      console.log(response.data);
+                      if (response.data.success == true) {
+                        if (response.data.finish == true) {
+                          console.log("FACEID:"+response.data.faceid);
+                        }
+                        else{
+                          console.log("还没结束请耐心等待");
+                        }
+                      }
+                      else {
+                        console.log("请求失败！！！");
+                      }
+                    })
+                    // .catch(error => {
+                    //     console.log(error)
+                    //     this.$message.error('Can\'t do it!!!');
+                    // })
+            }
+          
         }
       }
     }
