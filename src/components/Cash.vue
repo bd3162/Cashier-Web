@@ -63,13 +63,9 @@ export default {
 		}
 	},
 	methods: {
-		// delete the products
+		// delete the products by asin
 		deleteAsin (asin) {
 			console.log('about to delete' + asin);
-			// var index = this.shoppingList.findIndex(function(item){
-			// 	return prod
-			// })
-
 			this.shoppingList.some((prod, i) => {
 				if (prod.asin == asin) {
 					this.shoppingList.splice(i, 1);
@@ -80,10 +76,9 @@ export default {
 
 		// add the searching result into shopping list
 		addAsin (prod) {
-			var newProd =  this.shoppingList.find(item => {
+			let newProd =  this.shoppingList.find(item => {
 				return item.asin === prod.asin;
 			});
-
 			if (newProd!=undefined) {
 				newProd.num += prod.num;
 			}
@@ -92,10 +87,78 @@ export default {
 			}
 		},
 
-		// check orders
-		check () {
+		// add orders
+		addorder (prod) {
+			this.$axios({
+				methods: 'POST',
+				url: '/cashier/addOrder',
+				data: this.qs.stringify({
+					user_id: this.$store.state.face_id,
+					prod_asin: prod.asin,
+					num: prod.num,
+				})
+			})
+				.then(response => {
+					console.log(response.data);
+					if (response.data["message"]) {
+						// this.$message({
+						// 	message: 'Success to check the order. Congrats!',
+						// 	type: 'success'
+						// })
+						return true;
+					}
+					else {
+						// this.$message({
+						// 	message: 'Failed to check the order. Shame!',
+						// 	type: 'warning'
+						// })
+						return false;
+					}
+				})
+				.catch(error => {
+					// this.$message.error('Request Error, please check the console to find out what goes wrong.');
+					return false;
+				})
+		},
 
-		}
+		// check
+		check　() {
+			for (order in shoppingList) {
+				let flag = this.addorder(order);
+				if (flag) {
+					console.log("success" + order);
+				}
+				else {
+					console.log("fail" + order);
+				}
+			}
+			this.$axios({
+				methods: 'POST',
+				url: '',
+				data: this.qs.stringify({
+					user_id: this.$store.state.face_id,
+					total: this.totalPrice,
+				})
+			})
+					.then(response => {
+						if (response.data['message']) {
+							this.$message({
+								message: 'Success to update member points. Congrats!',
+								type: 'success',
+							})
+						}
+						else {
+							this.$message({
+								message: 'Failed to update member points. Shame!',
+								type: 'warning'
+							})
+						}
+					})
+					.catch(error => {
+						this.$message.error('Request Error, please check the console to find out what goes wrong.');
+					})
+
+		},
 	},
 	filters: {
 	    // filter to keep price in short

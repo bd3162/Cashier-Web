@@ -57,7 +57,7 @@ export default {
                 })
                     .then(response => {
                         console.log(response.data);
-                        if (response.data['success']) {
+                        if (response.data['message']) {
                             this.result = {
                                 asin: response.data.asin,
                                 title: response.data.title,
@@ -74,8 +74,8 @@ export default {
                         }
                     })
                     .catch(error => {
-                        console.log(error)
-                        this.$message.error('Can\'t find the Product, please check your product ID!');
+                        console.log(error);
+                        this.$message.error('Request Error, please check the console to find out what goes wrong.');
                     })
             }
         },

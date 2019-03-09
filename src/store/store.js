@@ -11,7 +11,7 @@ export default new Vuex.Store({
         // 3. check the shopping list
         // 4. all done, ready for next customer
         member: false,
-        face_id : 'asfasdgf',
+        face_id : '',
         verification: '1234',
     },
     getters: {
