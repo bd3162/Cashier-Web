@@ -3,7 +3,7 @@
     	<el-row type="flex" class="row-bg" justify="center">
       		<el-col :span="10">
         		<h1>收银台</h1>
-				<el-row :gutter="24" v-if="member">
+				<el-row :gutter="24" v-if="this.$store.state.member">
 					<el-col :span="6">
 						<h2 style="color: #F56C6C">您已经是零售店会员</h2>
 						<h2 style="color: #F56C6C">享受您的积分吧！</h2>
@@ -16,8 +16,8 @@
 						<h2 style="color: #F56C6C">现在注册，领取积分奖励！</h2>
 					</el-col>
 					<el-col :span="4" :offset="8">
-						<el-tooltip class="item" effect="dark" content="Verification: Q5ZG" placement="right" style="position:absolute; bottom: 0">
-							<el-button type="success" round>Sign Up</el-button>
+						<el-tooltip class="item" effect="dark" content="verif" placement="right" style="position:absolute; bottom: 0">
+							<el-button @click="signup" type="success" round>Sign Up</el-button>
 						</el-tooltip>
 					</el-col>
 				</el-row>
@@ -42,10 +42,7 @@ export default {
 	name: "Cash",
 	data () {
 		return {
-			member: false,
-			shoppingList: [
-
-			],
+			shoppingList: [],
 		}
 	},
 	components: {
@@ -60,6 +57,10 @@ export default {
 				total += a.price * a.num;
 			});
 			return total;
+		},
+		// 非会员产生验证码
+		verif () {
+			return "Verification: " + this.$store.state.verif;
 		}
 	},
 	methods: {
@@ -101,28 +102,22 @@ export default {
 				.then(response => {
 					console.log(response.data);
 					if (response.data["message"]) {
-						// this.$message({
-						// 	message: 'Success to check the order. Congrats!',
-						// 	type: 'success'
-						// })
+						console.log("success to add order.")
 						return true;
 					}
 					else {
-						// this.$message({
-						// 	message: 'Failed to check the order. Shame!',
-						// 	type: 'warning'
-						// })
+						console.log("fail to add order.")
 						return false;
 					}
 				})
 				.catch(error => {
-					// this.$message.error('Request Error, please check the console to find out what goes wrong.');
+					console.log("add order request error.")
 					return false;
 				})
 		},
 
 		// check
-		check　() {
+		check () {
 			for (order in shoppingList) {
 				let flag = this.addorder(order);
 				if (flag) {
@@ -132,24 +127,58 @@ export default {
 					console.log("fail" + order);
 				}
 			}
+			if (this.$store.state.member) { // if the customer is a member
+				this.$axios({
+					methods: 'POST',
+					url: '/cashier/updatePoints',
+					data: this.qs.stringify({
+						user_id: this.$store.state.face_id,
+						total: this.totalPrice,
+					})
+				})
+						.then(response => {
+							if (response.data['message']) {
+								this.$message({
+									message: 'Success to update member points. Congrats!',
+									type: 'success',
+								})
+							}
+							else {
+								this.$message({
+									message: 'Failed to update member points. Shame!',
+									type: 'warning'
+								})
+							}
+						})
+						.catch(error => {
+							this.$message.error('Request Error, please check the console to find out what goes wrong.');
+						})
+			}
+		},
+
+		// check if the customer has signed up
+		signup () {
 			this.$axios({
 				methods: 'POST',
-				url: '',
+				url: '/cashier/getVerif',
 				data: this.qs.stringify({
 					user_id: this.$store.state.face_id,
-					total: this.totalPrice,
 				})
 			})
 					.then(response => {
-						if (response.data['message']) {
+						if (response.data["member"]) {
+							// find out the customer signed up successfully
+							this.$store.dispatch('changeMember', true)
 							this.$message({
-								message: 'Success to update member points. Congrats!',
+								message: 'You are a member now. Congrats!',
 								type: 'success',
 							})
 						}
 						else {
+							// still not a member
+							this.$store.dispatch('changeMember', false)
 							this.$message({
-								message: 'Failed to update member points. Shame!',
+								message: 'Still not a member, please check your phone again.',
 								type: 'warning'
 							})
 						}
@@ -157,8 +186,7 @@ export default {
 					.catch(error => {
 						this.$message.error('Request Error, please check the console to find out what goes wrong.');
 					})
-
-		},
+		}
 	},
 	filters: {
 	    // filter to keep price in short

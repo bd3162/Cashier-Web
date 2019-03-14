@@ -5,14 +5,13 @@ Vue.use(Vuex);
 export default new Vuex.Store({
     state: {
         // init the state
-        step: 3,
+        step: 1,
         // 1: take a shot ;
-        // 2. register as a member
-        // 3. check the shopping list
-        // 4. all done, ready for next customer
+        // 2. check the shopping list
+        // 3. all done, ready for next customer
         member: false,
         face_id : '',
-        verification: '1234',
+        verification: '',
     },
     getters: {
         // each component can access state via getters
@@ -28,12 +27,32 @@ export default new Vuex.Store({
     },
     mutations: {
         // handle the state
-        showFaceID (state, msg) {
-            state.face_id = msg;
+        GET_FACE_ID (state, faceid) {
+            state.face_id = faceid;
+        },
+        CHANGE_MEMBER (state, membered) {
+            state.member = membered;
+        },
+        CHANGE_STEP (state, step) {
+            state.step = state;
+        },
+        GET_VERIF (state, verif) {
+            state.verif = verif;
         }
     },
     actions: {
         // commit state changes
-
+        getFaceid (context, faceid) {
+            context.commit('GET_FACE_ID', faceid)
+        },
+        changeMember (context, membered) {
+            context.commit('CHANGE_MEMBER', membered)
+        },
+        changeStep (context, step) {
+            context.commit('CHANGE_STEP', step)
+        },
+        getVerif (context, verif) {
+            context.commit('GET_VERIF', verif)
+        }
     }
 })

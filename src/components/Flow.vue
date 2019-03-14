@@ -21,23 +21,20 @@
             }
         },
         computed: {
-            readyToCheck () {
-                let i = this.$store.getters.showStep;
-                if (i == 3) {
-                    return true;
-                }
-                else {
-                    return false;
-                }
-            },
             readyToSnap () {
                 let i = this.$store.getters.showStep;
-                if (i == 1) {
-                    return true;
-                }
-                else {
-                    return false;
-                }
+                if (i == 1) { return true; }
+                else { return false; }
+            },
+            readyToCheck () {
+                let i = this.$store.getters.showStep;
+                if (i == 2) { return true; }
+                else { return false; }
+            },
+            readyForNext () {
+                let i = this.$store.getters.showStep;
+                if (i == 3) { return true; }
+                else { return false; }
             }
         },
         methods: {
