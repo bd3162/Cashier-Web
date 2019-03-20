@@ -4,7 +4,7 @@
         <el-row type="flex" class="row-bg" justify="center">
             <el-col :span="10">
                 <h1>人脸识别</h1>
-                <img id="image" :src="imgUrl"/>
+                <!--<img id="image" :src="imgUrl"/>-->
                 <video id="video" width="320" height="240" autoplay></video>
                 <el-button @click="snap" type="primary" round>Snap Photo</el-button>
                 <canvas id="canvas" width="320" height="240"></canvas>

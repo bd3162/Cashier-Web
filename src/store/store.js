@@ -9,7 +9,7 @@ export default new Vuex.Store({
         // 1: take a shot ;
         // 2. check the shopping list
         // 3. all done, ready for next customer
-        member: false,
+        member:true,
         face_id : '',
         verification: '',
     },
