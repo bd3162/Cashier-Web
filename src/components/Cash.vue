@@ -56,7 +56,7 @@ export default {
 		}
 	},
 	components: {
-    UseCharts,
+        UseCharts,
 		searchProd,
 		ProdCard2, // product card that already be put in the shopping list
 	},
@@ -92,7 +92,7 @@ export default {
 				newProd.num += prod.num;
 			}
 			else {
-			  //数组末尾添加元素
+			   //数组末尾添加元素（对类型无限制）
 				this.shoppingList.push(prod);
 			}
 		},

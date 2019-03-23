@@ -4,7 +4,7 @@ import Flow from '@/components/Flow'
 import Cash from '@/components/Cash'
 import Shot from '@/components/Shot'
 
-Vue.use(Router)
+Vue.use(Router);
 
 export default new Router({
   routes: [

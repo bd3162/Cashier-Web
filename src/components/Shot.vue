@@ -100,7 +100,7 @@
                                                 }
                                             }
                                             // 进入结账步骤
-                                            this.$store.dispatch('changeStep', 2)
+                                           // this.$store.dispatch('changeStep', 2)
                                         })
                                         .catch(error => {
                                             console.log("Get Verif request error.");
