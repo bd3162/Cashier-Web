@@ -69,7 +69,6 @@
             }
             ];
 
-
             this.$axios.all([
               this.$axios.get('https://haoxipeng.chinacloudapp.cn/scrm-1.0/customer/selectById',{ params: param[0]},{retry:4,retryDelay:1000 }),
 
@@ -123,9 +122,9 @@
 
                 //从后台获取品牌销量+品牌名称
                 if (brandInfo.data['msgDesc'] == "Success") {
-                   data[5]=brandInfo.data.data.brandSalesList[0][1].salesCount;
-                   brand = brandInfo.data.data.brandSalesList[0][1].brand;
-                   theIndicator[5]=    {name: '品牌: '+brand, max: 10};
+                  data[5] = brandInfo.data.data.brandSalesList[0][1].salesCount;
+                  brand = brandInfo.data.data.brandSalesList[0][1].brand;
+                  theIndicator[5] = {name: '品牌: '+brand, max: 10};
                 }
 
                 myChart.hideLoading();

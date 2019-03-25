@@ -58,7 +58,7 @@
                     let base = this.shot();
                     this.$axios({
                         method: 'POST',
-                        url: 'http://42.159.104.30:80/crm32/multiImage/sendBase',
+                        url: 'http://42.159.104.30:8001/upload',
                         data: this.qs.stringify({
                             bases: base,
                             name: i,
@@ -74,7 +74,7 @@
 
                                     // 验证是否为会员并取得验证码
                                     this.$axios({
-                                        methods: 'POST',
+                                        method: 'POST',
                                         url: '/cashier/getVerif',
                                         data: this.qs.stringify({
                                             user_id: response.data.faceid,

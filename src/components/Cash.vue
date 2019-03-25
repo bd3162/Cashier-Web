@@ -17,8 +17,8 @@
 						<h2 style="color: #F56C6C">现在注册，领取积分奖励！</h2>
 					</el-col>
 					<el-col :span="4" :offset="18">
-						<el-tooltip class="item" effect="dark" content="Verification: Q5ZG" placement="right" style="position:absolute; bottom: 0">
-							<el-button type="success" round>Sign Up</el-button>
+						<el-tooltip class="item" effect="dark" :content="verification" placement="right" style="position:absolute; bottom: 0">
+							<el-button type="success" round @click="checkMember">Sign Up</el-button>
 						</el-tooltip>
 					</el-col>
 				</el-row>
@@ -33,7 +33,7 @@
 
 					</el-col>
 				</el-row>
-            <UseCharts v-if="this.$store.state.member"></UseCharts>
+            <!--<UseCharts v-if="this.$store.state.member"></UseCharts>-->
 
       		</el-col>
     	</el-row>
@@ -43,7 +43,7 @@
 <script>
 import searchProd from './searchProd'
 import ProdCard2 from './ProdCard2'
-import UseCharts from "./UserCharts";
+// import UseCharts from "./UserCharts";
 
 export default {
 	name: "Cash",
@@ -56,7 +56,7 @@ export default {
 		}
 	},
 	components: {
-        UseCharts,
+        // UseCharts,
 		searchProd,
 		ProdCard2, // product card that already be put in the shopping list
 	},
@@ -68,9 +68,47 @@ export default {
 				total += a.price * a.num;
 			});
 			return total;
+		},
+		verification () {
+			return "Verification: " + this.$store.state.verification;
 		}
 	},
 	methods: {
+		checkMember () {
+			console.log(this.$store.state.face_id);
+			let faceid = this.$store.state.face_id
+			// this.$axios.post('/cashier/getVerif', {param:{user_id: faceid}})
+			this.$axios({
+				method: 'POST',
+				url: '/cashier/getVerif',
+				data: this.qs.stringify({
+					user_id: this.$store.state.face_id,
+				})
+			})
+					.then(response => {
+						if (response.data["member"]) {
+							// 数据库中有数据，是会员
+							this.$store.dispatch('changeMember', true);
+							console.log("Has change into a member.");
+						}
+						else {
+							// 非会员
+							if (response.data["message"]) {
+								// 会员设为false
+								this.$store.dispatch('changeMember', false);
+								console.log("Not a member yet");
+								// 存储产生的验证码
+								this.$store.dispatch('getVerif', response.data['verif']);
+							}
+							else {
+								console.log("Set Verification Failed......");
+							}
+						}
+					})
+					.catch(error => {
+						console.log("Check member request error.");
+					})
+		},
 		// delete the products by asin
 		deleteAsin (asin) {
 			console.log('about to delete' + asin);
@@ -82,7 +120,6 @@ export default {
 				}
 			})
 		},
-
 		// add the searching result into shopping list
 		addAsin (prod) {
 			let newProd =  this.shoppingList.find(item => {
@@ -137,14 +174,14 @@ export default {
 				let flag = this.addorder(order);
 				if (flag) {
 					console.log("success" + order);
-          this.$axios({
-            method: 'Get',
-            url: '/reco',
-            data: this.qs.stringify({
-              asin: this.face_id,
-            })
-				  });
-        }
+					  this.$axios({
+						method: 'Get',
+						url: '/reco',
+						data: this.qs.stringify({
+						  asin: this.face_id,
+						})
+					  });
+				}
 				else {
 					console.log("fail" + order);
 				}

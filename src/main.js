@@ -12,13 +12,13 @@ import Vuex from 'vuex'
 
 //在main.js加入下面两行代码
 import echarts from 'echarts'
-Vue.prototype.$echarts = echarts //将echarts注册成Vue的全局属性
+Vue.prototype.$echarts = echarts ;//将echarts注册成Vue的全局属性
 
-Vue.config.productionTip = false
+Vue.config.productionTip = false;
 
 //axios.defaults.timeout = 60000;
 // axios.defaults.baseURL = 'http://42.159.104.30:80';
-axios.defaults.baseURL = 'http://42.159.104.30:8000';
+axios.defaults.baseURL = 'https://haoxipeng.chinacloudapp.cn/scrm-1.0';
 
 //main.js设置全局的请求次数，请求的间隙
 axios.interceptors.response.use(undefined, function axiosRetryInterceptor(err) {
