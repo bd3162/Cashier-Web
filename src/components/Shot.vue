@@ -50,18 +50,22 @@
                 return dataURL;
             },
             snap: function () {
+                var timestamp=new Date().getTime();
                 for (let i = 0; i < 5; i++) {
                     // 半秒钟拍一次照片并传到后台
                     // setTimeout(() => {
                     //     let base = this.shot();
                     // }, 500);
                     let base = this.shot();
+                    let img_name = timestamp + "_" + i;
+                    console.log("img_name: " + img_name)
                     this.$axios({
                         method: 'POST',
                         url: 'http://42.159.104.30:8001/upload',
                         data: this.qs.stringify({
                             bases: base,
-                            name: i,
+                            name: img_name,
+                            timestamp: timestamp,
                         })
                     })
                         .then(response => {
@@ -105,6 +109,13 @@
                                         .catch(error => {
                                             console.log("Get Verif request error.");
                                         })
+
+                                    // 进入下一步
+                                    this.$message({
+                                        message: 'Success to recongnize. Congrats!',
+                                        type: 'success'
+                                    })
+                                    this.$store.dispatch('changeStep', 2)
                                 }
                                 else {
                                     // 图片还没传完
