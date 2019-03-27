@@ -67,7 +67,7 @@ export default {
 			this.shoppingList.forEach(a => {
 				total += a.price * a.num;
 			});
-			return total;
+			return Math.round(total);
 		},
 		verification () {
 			return "Verification: " + this.$store.state.verification;
@@ -137,7 +137,7 @@ export default {
 		// add orders
 		addorder (prod) {
 			this.$axios({
-				methods: 'POST',
+				method: 'POST',
 				url: '/cashier/addOrder',
 				data: this.qs.stringify({
 					user_id: this.$store.state.face_id,
@@ -170,26 +170,43 @@ export default {
 
 		// check
 		check　() {
-			for (order in shoppingList) {
+			if (this.shoppingList.length == 0) {
+				this.$message({
+					message: 'Please put products into the shopping list. THX!',
+					type: 'warning'
+				})
+				return
+			}
+			for (let order of this.shoppingList) {
 				let flag = this.addorder(order);
 				if (flag) {
 					console.log("success" + order);
-					  this.$axios({
-						method: 'Get',
-						url: '/reco',
-						data: this.qs.stringify({
-						  asin: this.face_id,
-						})
-					  });
 				}
 				else {
 					console.log("fail" + order);
 				}
 			}
+			// 更新个性化推荐
+			this.$axios({
+				method: 'GET',
+				url: 'https://wsw.chinanorth.cloudapp.chinacloudapi.cn/reco-1.0/reco',
+				data: this.qs.stringify({
+					user_id: this.face_id,
+				})
+			})
+			.then(response => {
+				if (response.data.success) {
+					console.log("更新个性化推荐成功")
+				}
+				else {
+					console.log("更新个性化推荐失败！！！")
+				}
+			})
+
 			//axios用于向后台发起请求
 			this.$axios({
-				methods: 'POST',
-				url: '',
+				method: 'POST',
+				url: '/cashier/updatePoints',
 				data: this.qs.stringify({
 					user_id: this.$store.state.face_id,
 					total: this.totalPrice,
@@ -198,9 +215,14 @@ export default {
 					.then(response => {
 						if (response.data['message']) {
 							this.$message({
-								message: 'Success to update member points. Congrats!',
-								type: 'success',
+								message: 'Success to Check Orders and Member Points. Congrats!',
+								type: 'success'
 							})
+							//重新开始人脸识别
+							this.$store.dispatch('changeStep', 1)
+							this.$store.dispatch('changeMember', false)
+							this.$store.dispatch('getFaceid', '')
+							this.$store.dispatch('getVerif', '')
 						}
 						else {
 							this.$message({

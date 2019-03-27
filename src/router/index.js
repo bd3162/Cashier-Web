@@ -16,13 +16,6 @@ export default new Router({
       path: '/cash',
       name: 'Cash',
       component: Cash,
-      children: [
-        {
-          path: '/cash/shot',
-          name: 'Shot',
-          component: Shot,
-        },
-      ]
     },{
       path: '/face',
       name: 'Face',

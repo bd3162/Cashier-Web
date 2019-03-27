@@ -34,7 +34,7 @@ export default new Vuex.Store({
             state.member = membered;
         },
         CHANGE_STEP (state, step) {
-            state.step = state;
+            state.step = step;
         },
         GET_VERIF (state, verif) {
             state.verification = verif;
