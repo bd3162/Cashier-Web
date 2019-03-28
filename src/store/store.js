@@ -9,8 +9,8 @@ export default new Vuex.Store({
         // 1: take a shot ;
         // 2. check the shopping list
         // 3. all done, ready for next customer
-        member: false,
-        face_id : '',
+        member:false,
+        face_id : 'A101DY98ITQ39J',
         verification: '',
     },
     getters: {
@@ -34,10 +34,10 @@ export default new Vuex.Store({
             state.member = membered;
         },
         CHANGE_STEP (state, step) {
-            state.step = state;
+            state.step = step;
         },
         GET_VERIF (state, verif) {
-            state.verif = verif;
+            state.verification = verif;
         }
     },
     actions: {

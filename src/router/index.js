@@ -4,7 +4,7 @@ import Flow from '@/components/Flow'
 import Cash from '@/components/Cash'
 import Shot from '@/components/Shot'
 
-Vue.use(Router)
+Vue.use(Router);
 
 export default new Router({
   routes: [
@@ -16,13 +16,6 @@ export default new Router({
       path: '/cash',
       name: 'Cash',
       component: Cash,
-      children: [
-        {
-          path: '/cash/shot',
-          name: 'Shot',
-          component: Shot,
-        },
-      ]
     },{
       path: '/face',
       name: 'Face',

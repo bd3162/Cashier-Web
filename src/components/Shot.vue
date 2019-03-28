@@ -4,7 +4,7 @@
         <el-row type="flex" class="row-bg" justify="center">
             <el-col :span="10">
                 <h1>人脸识别</h1>
-                <img id="image" :src="imgUrl"/>
+                <!--<img id="image" :src="imgUrl"/>-->
                 <video id="video" width="320" height="240" autoplay></video>
                 <el-button @click="snap" type="primary" round>Snap Photo</el-button>
                 <canvas id="canvas" width="320" height="240"></canvas>
@@ -22,6 +22,8 @@
                 canvas: null,
                 video: null,
                 context: null,
+                shot_times: 0, //拍照次数记录，最大为5
+                timer: null, //拍照定时器
             }
         },
         mounted() {
@@ -49,76 +51,86 @@
                 let dataURL = this.canvas.toDataURL("screenshot/png");
                 return dataURL;
             },
-            snap: function () {
-                for (let i = 0; i < 5; i++) {
-                    // 半秒钟拍一次照片并传到后台
-                    // setTimeout(() => {
-                    //     let base = this.shot();
-                    // }, 500);
-                    let base = this.shot();
-                    this.$axios({
-                        method: 'POST',
-                        url: 'http://42.159.104.30:80/crm32/multiImage/sendBase',
-                        data: this.qs.stringify({
-                            bases: base,
-                            name: i,
-                        })
+            snaprequest: function (timestamp, i) {
+                let base = this.shot();
+                let img_name = timestamp + "_" + i;
+                console.log("img_name: " + img_name)
+                this.$axios({
+                    method: 'POST',
+                    url: 'http://42.159.104.30:8001/upload',
+                    data: this.qs.stringify({
+                        bases: base,
+                        name: img_name,
+                        timestamp: timestamp,
                     })
-                        .then(response => {
-                            console.log(response.data);
-                            if (response.data.success == true) {
-                                if (response.data.finish == true) {
-                                    // 已经取到人脸识别faceID
-                                    console.log("FACEID:" + response.data.faceid);
-                                    this.$store.dispatch('getFaceid', response.data.faceid);
+                })
+                    .then(response => {
+                        console.log(response.data);
+                        if (response.data.success == true) {
+                            if (response.data.finish == true) {
+                                // 已经取到人脸识别faceID
+                                console.log("FACEID:" + response.data.faceid);
+                                this.$store.dispatch('getFaceid', response.data.faceid);
 
-                                    // 验证是否为会员并取得验证码
-                                    this.$axios({
-                                        methods: 'POST',
-                                        url: '/cashier/getVerif',
-                                        data: this.qs.stringify({
-                                            user_id: response.data.faceid,
-                                        })
+                                // 验证是否为会员并取得验证码
+                                this.$axios({
+                                    method: 'POST',
+                                    url: '/cashier/getVerif',
+                                    data: this.qs.stringify({
+                                        user_id: response.data.faceid,
                                     })
-                                        .then(response => {
-                                            if (response.data["member"]) {
-                                                // 数据库中有数据，是会员
-                                                this.$store.dispatch('changeMember', true);
-                                                console.log("Already a member.");
+                                })
+                                    .then(response => {
+                                        if (response.data["member"]) {
+                                            // 数据库中有数据，是会员
+                                            this.$store.dispatch('changeMember', true);
+                                            console.log("Already a member.");
+                                        }
+                                        else {
+                                            // 非会员
+                                            if (response.data["message"]) {
+                                                // 会员设为false
+                                                this.$store.dispatch('changeMember', false);
+                                                console.log("Not a member yet");
+                                                // 存储产生的验证码
+                                                this.$store.dispatch('getVerif', response.data['verif']);
                                             }
                                             else {
-                                                // 非会员
-                                                if (response.data["message"]) {
-                                                    // 会员设为false
-                                                    this.$store.dispatch('changeMember', false);
-                                                    console.log("Not a member yet");
-                                                    // 存储产生的验证码
-                                                    this.$store.dispatch('getVerif', response.data['verif']);
-                                                }
-                                                else {
-                                                    console.log("Set Verification Failed......");
-                                                }
+                                                console.log("Set Verification Failed......");
                                             }
-                                            // 进入结账步骤
-                                            this.$store.dispatch('changeStep', 2)
+                                        }
+                                        // 进入下一步
+                                        this.$message({
+                                            message: 'Success to recongnize. Congrats!',
+                                            type: 'success'
                                         })
-                                        .catch(error => {
-                                            console.log("Get Verif request error.");
-                                        })
-                                }
-                                else {
-                                    // 图片还没传完
-                                    console.log("还没结束请耐心等待");
-                                }
+                                        this.$store.dispatch('changeStep', 2)
+                                    })
+                                    .catch(error => {
+                                        console.log("Get Verif request error.");
+                                    })
                             }
                             else {
-                                console.log("图片请求失败，后台出错");
+                                // 图片还没传完
+                                console.log("还没结束请耐心等待");
                             }
-                        })
-                        .catch(error => {
-                            console.log(error);
-                            this.$message.error('Face Request Error......');
+                        }
+                        else {
+                            console.log("图片请求失败，后台出错");
+                        }
                     })
+                    .catch(error => {
+                        console.log(error);
+                        this.$message.error('Face Request Error......');
+                })
+            },
+            snap: function () {
+                var timestamp=new Date().getTime();
+                for (let i = 0; i < 5; i++) {
+                    // 半秒钟拍一次照片并传到后台
+                    setTimeout(() => {
+                        this.snaprequest(timestamp, i);
+                    }, 1000 * i);
                 }
 
             }
