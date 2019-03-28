@@ -22,6 +22,8 @@
                 canvas: null,
                 video: null,
                 context: null,
+                shot_times: 0, //拍照次数记录，最大为5
+                timer: null, //拍照定时器
             }
         },
         mounted() {
@@ -128,8 +130,7 @@
                     // 半秒钟拍一次照片并传到后台
                     setTimeout(() => {
                         this.snaprequest(timestamp, i);
-                    }, 1000);
-                    
+                    }, 1000 * i);
                 }
 
             }
